@@ -38,6 +38,13 @@
     
     > fruit-ninja.py
  ```
+ 
+ ### Disclaimer 
+ 
+ No copyright infringement intended. Images used in this project were taken from another repository, you may refer to it for propietary matters. https://github.com/ChineseDron/fruit-ninja
+
+ This project does not intend to provide any means of monetary retribution. It is intended for educational
+ purposes only. 
     
     
  
