@@ -49,6 +49,7 @@ class knife:
         self.height = 7
         self.default_size= (7,7)
         self.angle = 0
+        self.enable_cut = False
         self.image = pygame.Surface(self.default_size)
         self.rect = self.image.get_rect()
         self.rect.top = self.pos[1]
@@ -57,6 +58,14 @@ class knife:
         self.rect.right = self.pos[0] + self.width
         self.flash = pygame.image.load(img_path + 'flash.png')
 
+    def sharp(self):
+        return self.enable_cut
+
+    def enable_cutting(self):
+        self.enable_cut = True
+
+    def disable_cutting(self):
+        self.enable_cut = False
 
     def draw(self):
         size = 7
@@ -176,6 +185,9 @@ class fruit:
     def change_rot_speed(self, speed):
         self.angle_speed = speed
 
+    def rotate(self, angle):
+        self.angle = angle
+
     def update_rect(self):
         self.rect.top = self.pos[1]
         self.rect.bottom =  self.pos[1] + self.height
@@ -251,14 +263,20 @@ def collision_handler(knf, frt):
     new_vx = abs((0.08*yWin)*math.cos(shoot_angle))
     if (fruit_angle >= (2*math.pi - math.pi/2) and fruit_angle <= math.pi/2):
         topFruit.stop(shoot_angle)
+        topFruit.rotate(2*math.pi - math.pi/2)
         botFruit.stop(math.pi - shoot_angle)
-        topFruit.svelx = new_vx
-        botFruit.svelx = -new_vx
-    else: 
-        topFruit.stop(math.pi - math.pi/18)
-        botFruit.stop(math.pi/18)
+        botFruit.rotate(math.pi/2)
+
+
         topFruit.svelx = -new_vx
         botFruit.svelx = new_vx
+    else: 
+        topFruit.stop(math.pi - math.pi/18)
+        topFruit.rotate(2*math.pi - math.pi/2)
+        botFruit.stop(math.pi/18)
+        botFruit.rotate(math.pi/2)
+        topFruit.svelx = new_vx
+        botFruit.svelx = -new_vx
         
     return topFruit,botFruit
 
@@ -290,6 +308,12 @@ def game_loop():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    knf.enable_cutting()
+                    
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    knf.disable_cutting()
+                    
 
             
             
@@ -300,7 +324,7 @@ def game_loop():
                 fr.update()
                 
                 
-                if pygame.sprite.collide_rect(knf, fr) == True and not fr.cut:
+                if pygame.sprite.collide_rect(knf, fr) == True and knf.sharp() and not fr.cut:
                         top,bot = collision_handler(knf,fr)
                         fruits.append(top)
                         fruits.append(bot)
